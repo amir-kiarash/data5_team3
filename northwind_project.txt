@@ -1,0 +1,18 @@
+with countries_sell_prod as (
+	SELECT Country as countries_sell
+	FROM Customers
+),
+categories_country as (
+	SELECT s.Country as supp_countries,
+	ca.CategoryName as categories_name
+	FROM Products p, Suppliers s
+	JOIN Categories ca ON ca.CategoryID = p.CategoryID
+	--GROUP by categories_name
+)
+SELECT DISTINCT countries_sell,
+categories_name
+FROM countries_sell_prod
+JOIN categories_country
+WHERE supp_countries = countries_sell
+ORDER BY countries_sell
+; 
