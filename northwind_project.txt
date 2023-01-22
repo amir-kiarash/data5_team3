@@ -1,6 +1,8 @@
 with countries_sell_prod as (
-	SELECT Country as countries_sell
-	FROM Customers
+	SELECT cus.Country as countries_sell
+	FROM Customers cus
+	JOIN Orders o ON cus.CustomerID = o.CustomerID 
+	WHERE cus.Country = o.ShipCountry 
 ),
 categories_country as (
 	SELECT s.Country as supp_countries,
