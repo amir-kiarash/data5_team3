@@ -1,0 +1,6 @@
+SELECT distinct o.shipcountry as 'selling to:', group_concat(distinct c.CategoryName) as categories from Orders o
+join 'Order Details' od on o.OrderID = od.orderid
+join Products p on od.productid = p.ProductID
+join Categories c on p.categoryid = c.CategoryID
+group by o.shipcountry
+order by o.shipcountry
