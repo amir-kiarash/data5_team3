@@ -1,0 +1,5 @@
+SELECT DISTINCT cus.country, c.CategoryName  from Orders o
+join Customers cus on o.customerID = cus.customerID
+join 'Order Details' od on od.orderid = o.orderid
+join Products p on p.productid = od.productid
+join Categories c on c.categoryid = p.categoryid
