@@ -1,20 +1,9 @@
-with countries_sell_prod as (
-	SELECT cus.Country as countries_sell
-	FROM Customers cus
-	JOIN Orders o ON cus.CustomerID = o.CustomerID 
-	WHERE cus.Country = o.ShipCountry 
-),
-categories_country as (
-	SELECT s.Country as supp_countries,
-	ca.CategoryName as categories_name
-	FROM Products p, Suppliers s
-	JOIN Categories ca ON ca.CategoryID = p.CategoryID
-	--GROUP by categories_name
-)
-SELECT DISTINCT countries_sell,
-categories_name
-FROM countries_sell_prod
-JOIN categories_country
-WHERE supp_countries = countries_sell
-ORDER BY countries_sell
-; 
+SELECT o.ShipCountry as [Countries that Company Sell its Product],
+group_concat(DISTINCT ca.CategoryName) as Categories
+FROM Orders o 
+JOIN 'Order Details' od ON od.OrderID = o.OrderID 
+JOIN Products p ON p.ProductID = od.ProductID
+JOIN Categories ca ON ca.CategoryID = p.CategoryID 
+GROUP BY o.ShipCountry 
+ORDER BY o.ShipCountry
+;
