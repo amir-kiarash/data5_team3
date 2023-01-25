@@ -1,0 +1,7 @@
+SELECT orders.shipcountry
+FROM orders
+join order details ON Orders.Order ID = Order details.Order ID
+Join Products ON products.ProductID = Order Details.ProductID 
+Join categories ON product.categoryID = categories.CategoryID 
+
+Group by orders.ShipCountry 
