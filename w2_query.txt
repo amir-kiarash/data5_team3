@@ -1,0 +1,26 @@
+select orderid, sales, case when bracket = 1 then 'High'
+WHEN bracket = 2 then 'Mid' else 'Low' end bracket
+from 
+(
+select o.orderid, STRFTIME('%Y', o.OrderDate) year, od.unitprice * od.quantity sales
+, ntile(3) over (order by od.unitprice * od.quantity  desc) bracket from Orders o 
+join 'Order Details' od on o.orderid = od.orderid)
+where year = '2016';
+
+select orderid, sales, case when bracket = 1 then 'High'
+WHEN bracket = 2 then 'Mid' else 'Low' end bracket
+from 
+(
+select o.orderid, STRFTIME('%Y', o.OrderDate) year, od.unitprice * od.quantity sales
+, ntile(3) over (order by od.unitprice * od.quantity  desc) bracket from Orders o 
+join 'Order Details' od on o.orderid = od.orderid)
+where year = '2017';
+
+select orderid, sales, case when bracket = 1 then 'High'
+WHEN bracket = 2 then 'Mid' else 'Low' end bracket
+from 
+(
+select o.orderid, STRFTIME('%Y', o.OrderDate) year, od.unitprice * od.quantity sales
+, ntile(3) over (order by od.unitprice * od.quantity  desc) bracket from Orders o 
+join 'Order Details' od on o.orderid = od.orderid)
+where year = '2018';
