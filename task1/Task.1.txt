@@ -1,7 +1,7 @@
-SELECT orders.shipcountry
-FROM orders
-join order details ON Orders.Order ID = Order details.Order ID
-Join Products ON products.ProductID = Order Details.ProductID 
-Join categories ON product.categoryID = categories.CategoryID 
-
-Group by orders.ShipCountry 
+SELECT o.shipcountry, C.categoryName
+FROM orders o
+join "order details" od ON O.OrderID = od.OrderID
+Join Products p ON p.ProductID = od.ProductID 
+Join categories c ON p.categoryID = c.CategoryID 
+Group by o.ShipCountry 
+Order by o.shipCountry
