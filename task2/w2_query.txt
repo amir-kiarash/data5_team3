@@ -1,26 +1,47 @@
+with order_date as(
+select distinct orderid, OrderDate, STRFTIME('%Y', OrderDate) year from Orders),
+order_sales as(
+SELECT orderid, sum(unitprice * quantity) sales from 'Order Details'
+  group by orderid
+),
+brackets_years as(
+select os.orderid, os.sales,  ntile(3) over (order by os.sales  desc) bracket,
+od.year
+from order_sales os
+join order_date od on od.orderid = os.orderid)
 select orderid, sales, case when bracket = 1 then 'High'
 WHEN bracket = 2 then 'Mid' else 'Low' end bracket
-from 
-(
-select o.orderid, STRFTIME('%Y', o.OrderDate) year, od.unitprice * od.quantity sales
-, ntile(3) over (order by od.unitprice * od.quantity  desc) bracket from Orders o 
-join 'Order Details' od on o.orderid = od.orderid)
+from brackets_years
 where year = '2016';
 
+with order_date as(
+select distinct orderid, OrderDate, STRFTIME('%Y', OrderDate) year from Orders),
+order_sales as(
+SELECT orderid, sum(unitprice * quantity) sales from 'Order Details'
+  group by orderid
+),
+brackets_years as(
+select os.orderid, os.sales,  ntile(3) over (order by os.sales  desc) bracket,
+od.year
+from order_sales os
+join order_date od on od.orderid = os.orderid)
 select orderid, sales, case when bracket = 1 then 'High'
 WHEN bracket = 2 then 'Mid' else 'Low' end bracket
-from 
-(
-select o.orderid, STRFTIME('%Y', o.OrderDate) year, od.unitprice * od.quantity sales
-, ntile(3) over (order by od.unitprice * od.quantity  desc) bracket from Orders o 
-join 'Order Details' od on o.orderid = od.orderid)
+from brackets_years
 where year = '2017';
 
+with order_date as(
+select distinct orderid, OrderDate, STRFTIME('%Y', OrderDate) year from Orders),
+order_sales as(
+SELECT orderid, sum(unitprice * quantity) sales from 'Order Details'
+  group by orderid
+),
+brackets_years as(
+select os.orderid, os.sales,  ntile(3) over (order by os.sales  desc) bracket,
+od.year
+from order_sales os
+join order_date od on od.orderid = os.orderid)
 select orderid, sales, case when bracket = 1 then 'High'
 WHEN bracket = 2 then 'Mid' else 'Low' end bracket
-from 
-(
-select o.orderid, STRFTIME('%Y', o.OrderDate) year, od.unitprice * od.quantity sales
-, ntile(3) over (order by od.unitprice * od.quantity  desc) bracket from Orders o 
-join 'Order Details' od on o.orderid = od.orderid)
+from brackets_years
 where year = '2018';
