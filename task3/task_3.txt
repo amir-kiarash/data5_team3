@@ -1,0 +1,17 @@
+with help_table as (
+  SELECT count(od.productid) as "Number of products sold", od.productid, p.ProductName from Orders o
+join 'Order Details' od on o.OrderID = od.orderid
+join Products p on od.productid = p.ProductID
+group by od.productid
+order by "Number of products sold" desc
+  ),
+help_table2 as (
+SELECT group_concat(productid, ', ') as "Product id", group_concat(productname, ', ') as "Product name", "Number of products sold" from help_table
+group by "Number of products sold"
+order by "Number of products sold" desc
+limit 3
+  )
+SELECT row_number() over (
+  order by "Number of products sold" desc
+  ) "Top 3 products",
+* from help_table2
