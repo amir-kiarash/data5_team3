@@ -1,0 +1,27 @@
+-- Task 3
+with count_selling_products as(
+SELECT COUNT(od.ProductID) as products_selling,
+od.ProductID,
+p.ProductName as Product
+FROM Products p
+JOIN "Order Details" od ON od.ProductID = p.ProductID
+GROUP By p.ProductName
+Order By products_selling Desc
+),
+
+grouping_them as (
+SELECT group_concat(ProductID, ', ') as "Product id",
+group_concat(Product, ', ') as "Product name",
+products_selling
+from count_selling_products
+group by products_selling
+order by products_selling desc
+limit 3
+)
+ 
+SELECT 
+row_number() over (
+  order by products_selling desc
+) "Top 3 Products",
+* FROM grouping_them
+;
