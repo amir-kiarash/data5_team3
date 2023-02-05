@@ -1,0 +1,10 @@
+with product_sale as(
+select p.productname,  COUNT(DISTINCT od.orderid) num_sales  from Products P 
+join 'Order Details' od on p.productid = od.productid
+group by 1),
+rn_product_sale as(
+select productname ,DENSE_RANK() Over(Order by num_sales desc) as RowNumber, num_sales
+from product_sale)
+select * from rn_product_sale
+where RowNumber <= 3
+order by RowNumber;
