@@ -1,0 +1,21 @@
+SELECT "number of products sold", GROUP_CONCAT(ProductID) as ProductID, GROUP_CONCAT(ProductName) as "top products" 
+FROM 
+(SELECT COUNT(od.ProductID) as "number of products sold", productName, od.ProductID 
+from Orders o 
+join 'Order Details' od on o.OrderID = od.orderid
+JOIN Products p on p.ProductID = od.ProductID
+group by od.productID
+order by "number of products sold" DESC)
+GROUP BY "number of products sold"
+ORDER BY "number of products sold" DESC
+LIMIT 3
+
+
+Answer:
+
+
+|number of products sold|ProductID|top products                                          |
+|-----------------------|---------|------------------------------------------------------|
+|54                     |59       |Raclette Courdavault                                  |
+|51                     |60,31,24 |Camembert Pierrot,Gorgonzola Telino,Guaraná Fantástica|
+|50                     |56       |Gnocchi di nonna Alice                                |
