@@ -1,0 +1,11 @@
+SELECT o.shipcountry as Country, strftime('%Y', o.ShippedDate) as Year,
+round(sum(od.unitprice*quantity)) as "Total sales per country",
+	case when round(sum(od.unitprice*quantity)) <= 7000 then 'Low sales'
+    	when round(sum(od.unitprice*quantity)) >= 7001 and round(sum(od.unitprice*quantity)) <= 18000 then 'Medium sales'
+        when round(sum(od.unitprice*quantity)) >= 18000 then 'High sales' 
+        end as 'Sales category'
+from Orders o 
+join 'Order Details' od on o.OrderID = od.orderid
+where year = '2016' or year = '2017' or year = '2018'
+group by o.ShipCountry , year
+order by o.ShipCountry 
