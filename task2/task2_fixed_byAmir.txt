@@ -1,0 +1,13 @@
+SELECT o.ShipCountry as Countries,
+strftime('%Y', o.ShippedDate) as Year,
+round(SUM(od.UnitPrice * od.Quantity)) as [Sales To Each Country],
+CASE WHEN round(SUM(od.UnitPrice * od.Quantity)) <= 7000 then 'Low'
+WHEN round(SUM(od.UnitPrice * od.Quantity)) > 7000 AND round(SUM(od.UnitPrice * od.Quantity)) <= 18000 THEN 'Mid'
+ELSE 'High'
+END as Amount
+FROM Orders o
+JOIN "Order Details" as od ON od.OrderID = o.OrderID
+where year = '2016' or year = '2017' or year = '2018'
+group by o.ShipCountry, year
+order by o.ShipCountry
+;
