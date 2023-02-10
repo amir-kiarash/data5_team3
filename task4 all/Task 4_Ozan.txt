@@ -1,0 +1,43 @@
+
+/* tasks for this week :
+1-generate a report for the number of territories each employee responsible for
+2- generate a report for employee's performance according to sales amount and order them
+3- for low-sales regions what is the shipped category there?
+*/
+
+-- First Task
+WITH employees_territories as
+(select  e.firstname ||' '|| e.lastname as full_name_of_employee, t.TerritoryDescription territory from Employees e
+inner join EmployeeTerritories et on e.employeeid = et.employeeid
+inner join Territories t on et.TerritoryID = t.TerritoryID)
+SELECT full_name_of_employee 'Full Name of Employee', count(territory) 'Number of Territories' from employees_territories
+GROUP BY 1;
+
+-- Second Task
+
+SELECT e.firstname ||' '|| e.lastname 'Full Name of Employee', sum(od.unitprice * od.quantity) 'Sales of Employee' 
+from Orders o
+join Employees e on e.EmployeeID = o.EmployeeID
+join 'Order Details' od on od.OrderID = o.OrderID
+GROUP by 1
+order BY 2 DESC;
+
+-- Third TaskCategories
+WITH least_3_regions as
+(SELECT o.shipregion region, sum(od.unitprice * od.quantity) sales from 'Order Details' od
+join Orders o on o.OrderID = od.orderid group by 1
+order by 2 
+limit 3)
+SELECT DISTINCT o.shipregion 'Region', c.CategoryName 'Category Name' from 'Order Details' od
+join Orders o on o.OrderID = od.OrderID
+join Products p on p.productid = od.productid
+join Categories c on c.categoryid = p.categoryid
+where o.shipregion in (SELECT DISTINCT region from least_3_regions)
+
+
+
+
+
+
+
+
