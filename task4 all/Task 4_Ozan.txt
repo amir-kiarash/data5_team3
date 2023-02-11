@@ -27,15 +27,15 @@ WITH least_3_regions as
 (SELECT o.shipregion region, sum(od.unitprice * od.quantity) sales from 'Order Details' od
 join Orders o on o.OrderID = od.orderid group by 1
 order by 2 
-limit 3)
-SELECT DISTINCT o.shipregion 'Region', c.CategoryName 'Category Name' from 'Order Details' od
+limit 3),
+ long_table as
+(SELECT DISTINCT o.shipregion 'Region', c.CategoryName cat_name from 'Order Details' od
 join Orders o on o.OrderID = od.OrderID
 join Products p on p.productid = od.productid
 join Categories c on c.categoryid = p.categoryid
-where o.shipregion in (SELECT DISTINCT region from least_3_regions)
-
-
-
+where o.shipregion in (SELECT DISTINCT region from least_3_regions))
+select Region, group_concat(DISTINCT cat_name) 'Categories' from long_table
+group by 1
 
 
 
