@@ -2,20 +2,23 @@
 with count_selling_products as(
 SELECT COUNT(od.ProductID) as products_selling,
 od.ProductID,
-p.ProductName as Product
+p.ProductName as Product,
+ c.categoryname cn
 FROM Products p
 JOIN "Order Details" od ON od.ProductID = p.ProductID
-GROUP By p.ProductName
+join Categories c on c.categoryid = p.categoryid
+GROUP By p.ProductName, c.categoryname
 Order By products_selling Desc
 ),
 
 grouping_them as (
 SELECT group_concat(ProductID, ', ') as "Product id",
 group_concat(Product, ', ') as "Product name",
-products_selling
+products_selling,
+  cn
 from count_selling_products
 group by products_selling
-order by products_selling desc
+order by products_selling,cn desc
 limit 3
 )
  
