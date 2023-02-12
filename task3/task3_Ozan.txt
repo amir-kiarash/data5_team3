@@ -5,6 +5,8 @@ group by 1),
 rn_product_sale as(
 select productname ,DENSE_RANK() Over(Order by num_sales desc) as RowNumber, num_sales
 from product_sale)
-select * from rn_product_sale
+select rps.*,c.CategoryName from rn_product_sale rps
+join Products p on p.ProductName = rps.productname
+join Categories c on c.categoryid = p.categoryid
 where RowNumber <= 3
 order by RowNumber;
