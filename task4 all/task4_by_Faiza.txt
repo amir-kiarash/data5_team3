@@ -1,0 +1,37 @@
+--1-generate a report for the number of territories each employee responsible for
+
+SELECT e.FirstName || ' ' || e.LastName  as "Employee fullname",
+e.Title, COUNT(t.TerritoryID) as territoryID,
+GROUP_CONCAT(Trim(TerritoryDescription)) as "territory responsible"  
+FROM Employees e 
+JOIN EmployeeTerritories et  ON e.EmployeeID  = et.EmployeeID
+JOIN Territories t ON et.TerritoryID = t.TerritoryID 
+GROUP BY e.EmployeeID 
+
+
+
+--2-generate a report for employee's performance according to sales amount and order them
+SELECT e.FirstName || ' ' || e.LastName  as "fullname", e.Title , round(sum(od.unitprice*quantity)) as "Total sales per employee",
+CASE WHEN round(sum(od.unitprice*quantity)) >= 200000 THEN 'High sales'
+     WHEN round(sum(od.unitprice*quantity)) >= 100000 and round(sum(od.unitprice*quantity)) <=200000 THEN 'Medium sales'
+     WHEN round(sum(od.unitprice*quantity)) <= 100000 THEN 'Low sales'
+     END as 'peformance'
+FROM Employees e 
+JOIN Orders o ON E.EmployeeID = O.EmployeeID 
+JOIN "Order Details" od ON o.OrderID = od.OrderID  
+GROUP BY e.EmployeeID 
+ORDER BY "total sales per employee" DESC
+
+
+
+
+--3-for low-sales regions what is the shipped category there?
+
+SELECT  o.ShipRegion, round(sum(od.unitprice*quantity)) as "Total sales", Group_concat (Distinct (c.CategoryName))
+FROM "Order Details" od
+JOIN Orders o ON o.OrderID = od.OrderID 
+JOIN Products p ON p.ProductID = od.productID
+JOIN Categories c ON c.CategoryID = p.CategoryID 
+GROUP BY o.shipregion
+HAVING round(sum(od.unitprice*quantity)) <=100000
+order by "total sales" DESC
