@@ -1,0 +1,76 @@
+-- task 1
+-- This code is for low sales countries
+
+SELECT c.CategoryName, date(avg(julianday(o.requireddate))) as average_required_date, date(avg(julianday(o.shippeddate))) as average_shipped_date,
+round(avg(julianday(o.requireddate)) - avg(julianday(o.shippeddate))) as 'shipped earlier [days]'
+from Orders o
+JOIN 'Order Details' od on o.OrderID = od.orderid
+join Products p on od.productid = p.ProductID
+join Categories c on p.CategoryID = c.CategoryID
+where o.ShipCountry in (
+  SELECT o.shipcountry from Orders o
+  join 'Order Details' od on o.OrderID = od.orderid
+  group by o.ShipCountry
+  HAVING round(sum(od.unitprice*quantity)) <= 70000
+)
+group by c.CategoryName
+
+-- This code is for medium sales countries
+
+SELECT c.CategoryName, date(avg(julianday(o.requireddate))) as average_required_date, date(avg(julianday(o.shippeddate))) as average_shipped_date,
+round(avg(julianday(o.requireddate)) - avg(julianday(o.shippeddate))) as 'shipped earlier [days]'
+from Orders o
+JOIN 'Order Details' od on o.OrderID = od.orderid
+join Products p on od.productid = p.ProductID
+join Categories c on p.CategoryID = c.CategoryID
+where o.ShipCountry in (
+  SELECT o.shipcountry from Orders o
+  join 'Order Details' od on o.OrderID = od.orderid
+  group by o.ShipCountry
+  HAVING round(sum(od.unitprice*quantity)) >= 70001 and round(sum(od.unitprice*quantity)) <= 180000
+)
+group by c.CategoryName
+
+
+-- This code is for High sales countries
+
+SELECT c.CategoryName, date(avg(julianday(o.requireddate))) as average_required_date, date(avg(julianday(o.shippeddate))) as average_shipped_date,
+round(avg(julianday(o.requireddate)) - avg(julianday(o.shippeddate))) as 'shipped earlier [days]'
+from Orders o
+JOIN 'Order Details' od on o.OrderID = od.orderid
+join Products p on od.productid = p.ProductID
+join Categories c on p.CategoryID = c.CategoryID
+where o.ShipCountry in (
+  SELECT o.shipcountry from Orders o
+  join 'Order Details' od on o.OrderID = od.orderid
+  group by o.ShipCountry
+  HAVING round(sum(od.unitprice*quantity)) >= 180001
+)
+group by c.CategoryName
+
+-- task 2
+-- code for low sales countries
+
+SELECT o.shipcountry, round(avg(od.discount)*100,1) as 'average discount [%]'
+from Orders o
+JOIN 'Order Details' od on o.OrderID = od.orderid
+where o.ShipCountry in (
+  SELECT o.shipcountry from Orders o
+  join 'Order Details' od on o.OrderID = od.orderid
+  group by o.ShipCountry
+  HAVING round(sum(od.unitprice*quantity)) <= 70000
+)
+group by o.shipcountry
+
+-- code for medium - high sales countries
+
+SELECT o.shipcountry, round(avg(od.discount)*100,1) as 'average discount [%]'
+from Orders o
+JOIN 'Order Details' od on o.OrderID = od.orderid
+where o.ShipCountry in (
+  SELECT o.shipcountry from Orders o
+  join 'Order Details' od on o.OrderID = od.orderid
+  group by o.ShipCountry
+  HAVING round(sum(od.unitprice*quantity)) >= 70001
+)
+group by o.shipcountry
