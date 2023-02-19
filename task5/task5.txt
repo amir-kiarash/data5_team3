@@ -1,0 +1,54 @@
+-- 1: find the average shipping date for each category for low sales region 
+--    and compare it with the Required date of the order
+--    (using shipped date - order date - required date)
+
+SELECT c.CategoryName,
+date(avg(JULIANDAY(o.OrderDate))) as [average ordered date for this category was],
+date(avg(JULIANDAY(o.shippeddate))) as average_shipped_date,
+date(avg(JULIANDAY(o.requireddate))) as average_required_date,
+round(avg(JULIANDAY(o.requireddate)) - avg(julianday(o.shippeddate))) as 'shipped earlier [days]'
+from Orders o
+JOIN 'Order Details' od on o.OrderID = od.orderid
+join Products p on od.productid = p.ProductID
+join Categories c on p.CategoryID = c.CategoryID
+where o.ShipCountry in (
+  SELECT o.shipcountry from Orders o
+  join 'Order Details' od on o.OrderID = od.orderid
+  group by o.ShipCountry
+  HAVING round(sum(od.unitprice*quantity)) <= 70000
+)
+group by c.CategoryName
+
+
+
+
+-- 2- find the effects of the discount on the low sales region 
+--    by comparing it with high sales regions discount
+
+-- This code is for Low sales countries
+
+SELECT o.shipcountry,
+round(avg(od.discount)*100,1) as 'average discount [%]'
+from Orders o
+JOIN 'Order Details' od on o.OrderID = od.orderid
+where o.ShipCountry in (
+  SELECT o.shipcountry from Orders o
+  join 'Order Details' od on o.OrderID = od.orderid
+  group by o.ShipCountry
+  HAVING round(sum(od.unitprice*quantity)) <= 70000
+)
+group by o.shipcountry
+
+
+-- code for medium - high sales countries
+
+SELECT o.shipcountry, round(avg(od.discount)*100,1) as 'average discount [%]'
+from Orders o
+JOIN 'Order Details' od on o.OrderID = od.orderid
+where o.ShipCountry in (
+  SELECT o.shipcountry from Orders o
+  join 'Order Details' od on o.OrderID = od.orderid
+  group by o.ShipCountry
+  HAVING round(sum(od.unitprice*quantity)) >= 70001
+)
+group by o.shipcountry
