@@ -1,0 +1,40 @@
+--1.find the average shipping date for each category for low sales region and compare it with the Required date of the order
+SELECT c.CategoryName, date(AVG(JULIANDAY(o.ShippedDate))) as "shipped_date", 
+date(AVG(JULIANDAY(O.RequiredDate))) as "required_date",
+round(AVG(JULIANDAY (o.RequiredDate)) - (AVG(JULIANDAY(o.ShippedDate)))) as "shipped days"
+FROM Orders o 
+JOIN "Order Details" od ON o.OrderID = od.OrderID 
+JOIN Products p ON od.productID = p.ProductID 
+JOIN Categories c ON c.CategoryID = p.CategoryID
+where o.ShipCountry in (
+  SELECT o.shipcountry from Orders o
+  join 'Order Details' od on o.OrderID = od.orderid
+  group by o.ShipCountry
+  HAVING round(sum(od.unitprice*quantity)) <= 70000)
+GROUP BY c.CategoryName
+
+
+
+
+--2.find the effects of the discount on the low sales region by comparing it with high sales regions discount
+
+For low sales region:
+
+SELECT o.ShipCountry, round(AVG (od.Discount),2) as "discount offered"
+FROM Orders o 
+JOIN "Order Details" od ON o.OrderID =od.OrderID 
+JOIN Products p ON p.ProductID =od.ProductID 
+JOIN Categories c ON c.CategoryID = p.CategoryID
+GROUP BY o.ShipCountry  
+HAVING round(sum(od.unitprice*quantity)) <= 70000
+
+
+For high sales region 
+
+SELECT o.ShipCountry, round(AVG (od.Discount),2) as "discount offered"
+FROM Orders o 
+JOIN "Order Details" od ON o.OrderID =od.OrderID 
+JOIN Products p ON p.ProductID =od.ProductID 
+JOIN Categories c ON c.CategoryID = p.CategoryID
+GROUP BY o.ShipCountry  
+HAVING round(sum(od.unitprice*quantity)) >= 180000
