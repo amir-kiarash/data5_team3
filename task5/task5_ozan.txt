@@ -1,0 +1,68 @@
+
+select ls.CategoryName, ls.'Average Shipping Days - Low sales countries',
+nls.'Average Shipping Days - High sales countries',
+case when ls.'Average Shipping Days - Low sales countries' > nls.'Average Shipping Days - High sales countries'
+then 1 else 0 end "ls_avg(sd)>"
+from 
+(
+SELECT c.CategoryName,
+avg(JULIANDAY(o.shippeddate) - JULIANDAY(o.OrderDate)) 'Average Shipping Days - Low sales countries'
+from Orders o
+JOIN 'Order Details' od on o.OrderID = od.orderid
+join Products p on od.productid = p.ProductID
+join Categories c on p.CategoryID = c.CategoryID
+where o.ShipCountry in (
+  SELECT o.shipcountry from Orders o
+  join 'Order Details' od on o.OrderID = od.orderid
+  group by o.ShipCountry
+  HAVING round(sum(od.unitprice*quantity)) <= 70000
+)
+group by c.CategoryName) as ls
+inner JOIN
+(
+SELECT c.CategoryName,
+avg(JULIANDAY(o.shippeddate) - JULIANDAY(o.OrderDate)) 'Average Shipping Days - High sales countries' 
+from Orders o
+JOIN 'Order Details' od on o.OrderID = od.orderid
+join Products p on od.productid = p.ProductID
+join Categories c on p.CategoryID = c.CategoryID
+where o.ShipCountry in (
+  SELECT o.shipcountry from Orders o
+  join 'Order Details' od on o.OrderID = od.orderid
+  group by o.ShipCountry
+  HAVING round(sum(od.unitprice*quantity)) > 70000
+)
+group by c.CategoryName
+  ) nls
+  
+  
+
+  -- 2- find the effects of the discount on the low sales region 
+--    by comparing it with high sales regions discount
+
+SELECT o.shipcountry,
+round(avg(od.discount)*100,1) as ad, 1 'Low Sales Country'
+from Orders o
+JOIN 'Order Details' od on o.OrderID = od.orderid
+where o.ShipCountry in (
+  SELECT o.shipcountry from Orders o
+  join 'Order Details' od on o.OrderID = od.orderid
+  group by o.ShipCountry
+  HAVING round(sum(od.unitprice*quantity)) <= 70000
+)
+group by o.shipcountry
+union
+
+SELECT o.shipcountry,
+round(avg(od.discount)*100,1) as ad, 0 'Low Sales Country'
+from Orders o
+JOIN 'Order Details' od on o.OrderID = od.orderid
+where o.ShipCountry in (
+  SELECT o.shipcountry from Orders o
+  join 'Order Details' od on o.OrderID = od.orderid
+  group by o.ShipCountry
+  HAVING round(sum(od.unitprice*quantity)) > 70000
+)
+group by o.shipcountry
+  
+  
